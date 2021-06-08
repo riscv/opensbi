@@ -109,14 +109,46 @@ The OpenSBI platform-independent static library *libsbi.a* can be compiled
 natively or it can be cross-compiled on a host with a different base
 architecture than RISC-V.
 
-For cross-compiling, the environment variable *CROSS_COMPILE* must be defined
-to specify the name prefix of the RISC-V compiler toolchain executables, e.g.
-*riscv64-unknown-elf-* if the gcc executable used is *riscv64-unknown-elf-gcc*.
+To build  *libsbi.a* simply execute:
 
-To build *libsbi.a* simply execute:
 ```
 make
 ```
+
+### Cross-compiling
+
+For cross-compiling, the variable *CROSS_COMPILE* must be defined to specify the
+name prefix of the RISC-V compiler toolchain executables, e.g.
+*riscv64-unknown-elf-* if the gcc executable used is *riscv64-unknown-elf-gcc*.
+If *CROSS_COMPILE* is not specified on the command line when invoking make, the
+variable will be taken from the environment, if it exists there. In general,
+the following ways can be used to define variables.
+
+* Define an environment variable for the current shell:
+    ```
+    export CROSS_COMPILE=riscv64-unknown-elf-
+    ...
+    make
+    ```
+
+* Define an environment variable for the current make invocation:
+    ```
+    CROSS_COMPILE=riscv64-unknown-elf- make
+    ```
+
+* Define a make variable directly without using environment variables:
+    ```
+    make CROSS_COMPILE=riscv64-unknown-elf-
+    ```
+
+* Define a make variable based on some other environment variable:
+    ```
+    export MY_CROSS_COMPILE_PREFIX=riscv64-unknown-elf-
+    ...
+    make CROSS_COMPILE=${MY_CROSS_COMPILE_PREFIX}
+    ```
+
+### Output directory
 
 All compiled binaries as well as the resulting *libsbi.a* static library file
 will be placed in the *build/lib* directory. To specify an alternate build root
@@ -124,6 +156,8 @@ directory path, run:
 ```
 make O=<build_directory>
 ```
+
+### Install
 
 To generate files to be installed for using *libsbi.a* in other projects, run:
 ```
@@ -192,14 +226,12 @@ to *riscv64-unknown-elf-*, 64-bit OpenSBI images will be generated. If building
 pre-configured to generate 32-bit RISC-V codes, like *riscv32-unknown-elf-*.
 
 However it's possible to explicitly specify the image bits we want to build with
-a given RISC-V toolchain. This can be done by setting the environment variable
+a given RISC-V toolchain. This can be done by setting the variable
 *PLATFORM_RISCV_XLEN* to the desired width, for example:
 
 ```
-export CROSS_COMPILE=riscv64-unknown-elf-
-export PLATFORM_RISCV_XLEN=32
+make CROSS_COMPILE=riscv64-unknown-elf- PLATFORM_RISCV_XLEN=32
 ```
-
 will generate 32-bit OpenSBI images. And vice vesa.
 
 Contributing to OpenSBI
